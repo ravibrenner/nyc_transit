@@ -40,11 +40,11 @@ Datasets I will be using:
 
 -   [Bicycle Counts](https://data.cityofnewyork.us/resource/uczf-rk3c)
 
--   [MTA Bridges & Tunnels Hourly Traffic Rates: Beginning 2010](https://data.ny.gov/resource/qzve-kjga)
+-   [MTA Subway Hourly Ridership: Beginning July 2020](https://data.ny.gov/resource/wujg-7c2s)
 
 -   [MTA Bus Hourly Ridership: Beginning September 2020](https://data.ny.gov/resource/kv7t-n8in)
 
--   [MTA Subway Hourly Ridership: Beginning July 2020](https://data.ny.gov/resource/wujg-7c2s)
+-   [MTA Bridges & Tunnels Hourly Traffic Rates: Beginning 2010](https://data.ny.gov/resource/qzve-kjga)
 
 I also anticipate needing some additional datasets for mapping the data, and for obtaining weather data. Another future direction could be to incorporate regional rail data as well.
 
@@ -112,7 +112,12 @@ bike_df |>
 
 
 ## Subway data
+```{r}
+subway_df <- fromJSON("https://data.ny.gov/resource/wujg-7c2s.json")
+```
+
 
 ## Bus data
 
 ## Driving data
+
