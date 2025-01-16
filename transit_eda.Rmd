@@ -1,0 +1,50 @@
+---
+title: "NYC transit EDA"
+author: "Ravi Brenner"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%",
+  dpi = 300,
+  warning = FALSE,
+  message = FALSE
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d```
+```
+
+The idea here is to explore changes in transit and transportation following the implementation of congestion pricing.
+
+My initial thought is to mainly use maps, line/bar graphs, and maybe some animated graphs to show what is happening.
+
+A further project/idea is to incorporate weather (esp into bike usage) and try to predict (i.e. using regression or ML models) transit use given different conditions.
+
+Also, I would ideally want this to end up as a dashboard that could be updated in real time (absolutely inspired by <https://www.congestion-pricing-tracker.com/>).
+
+Datasets I will be using:
+
+-   [MTA Subway Hourly Ridership: Beginning July 2020](<https://data.ny.gov/resource/wujg-7c2s>)
+
+- [Bicycle Counts](https://data.cityofnewyork.us/resource/uczf-rk3c)
+
+- [MTA Bridges & Tunnels Hourly Traffic Rates: Beginning 2010](https://data.ny.gov/resource/qzve-kjga)
+
+- [MTA Bus Hourly Ridership: Beginning September 2020](https://data.ny.gov/resource/kv7t-n8in)
+
+I also anticipate needing some additional datasets for mapping the data, and for obtaining weather data.
+
+Overall, one challenge I forsee is handling all the data. Many of these datasets have millions of rows, which could be hard to pull via the API, and may not be easily stored in memory as R does (maybe a python solution will be better? We will see).
