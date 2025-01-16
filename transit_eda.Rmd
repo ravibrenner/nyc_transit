@@ -67,8 +67,49 @@ min_date <- as.character(max_date - dyears(2)) |>
 bike_rows <-  fromJSON(str_c("https://data.cityofnewyork.us/resource/uczf-rk3c.json?$select=count(id)&$where=date>='",min_date,"'")) |>
   pull()
 
-bike_df <- fromJSON(str_c("https://data.cityofnewyork.us/resource/uczf-rk3c.json?$where=date>='",min_date,"'&$limit=",bike_rows))
+bike_df <- fromJSON(str_c("https://data.cityofnewyork.us/resource/uczf-rk3c.json?$where=date>='",min_date,"'&$limit=",bike_rows)) |>
+  as_tibble()
 ```
+
+Bicycle counters
+```{r}
+counters_df <- fromJSON("https://data.cityofnewyork.us/resource/smn3-rzf9.json") |>
+  as_tibble()
+```
+
+merge
+```{r}
+bike_df <- bike_df |>
+  inner_join(counters_df,by = "id")  
+```
+
+transform columns
+```{r}
+bike_df <- bike_df |>  
+  mutate(counts = as.numeric(counts),
+         date = str_replace(date,"T"," "),
+         date = str_remove(date,".000"),
+         date = as.POSIXct(date),
+         year = year(date),
+         month = month(date),
+         day = day(date),
+         wday = wday(date),
+         hour = hour(date))
+```
+
+Track by location
+```{r}
+bike_df |>
+  summarize(.by = c(name, year, month, day, hour),
+            counts = sum(counts)) |>
+  mutate(my_date = ymd_h(paste(2024, month, day, hour, sep = " "))) |>
+  filter(month == 1) |>
+  filter(name == "Amsterdam Ave at 86th St.") |>
+  ggplot(aes(x = my_date, y = counts, color = factor(year))) + 
+  geom_line()
+```
+
+
 
 ## Subway data
 
