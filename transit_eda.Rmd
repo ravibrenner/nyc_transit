@@ -57,14 +57,14 @@ Pull a 2 year window of data to limit rows
 max_date <- fromJSON("https://data.cityofnewyork.us/resource/uczf-rk3c.json?$select=max(date)") |>
   pull() |>
   str_replace("T"," ") |>
-  as.POSIXlt()
+  as.POSIXct()
 
 # subtract 2 years and reformat
 min_date <- as.character(max_date - dyears(2)) |>
   str_replace(" ","T") |>
   str_c(".000")
 
-bike_rows <-  fromJSON(str_c("https://data.cityofnewyork.us/resource/uczf-rk3c.json?$select=count(id)&$where=date>='",min_date,"'")) |>
+bike_rows <- fromJSON(str_c("https://data.cityofnewyork.us/resource/uczf-rk3c.json?$select=count(id)&$where=date>='",min_date,"'")) |>
   pull()
 
 bike_df <- fromJSON(str_c("https://data.cityofnewyork.us/resource/uczf-rk3c.json?$where=date>='",min_date,"'&$limit=",bike_rows)) |>
@@ -113,7 +113,23 @@ bike_df |>
 
 ## Subway data
 ```{r}
-subway_df <- fromJSON("https://data.ny.gov/resource/wujg-7c2s.json")
+max_dates <- fromJSON(str_c("https://data.ny.gov/resource/wujg-7c2s.json?$query=",URLencode("SELECT max(transit_timestamp)"))) |>
+  pull() |>
+  str_replace("T"," ") |>
+  as.POSIXct()
+
+# subtract 2 years and reformat
+min_date <- as.character(max_date - dyears(2)) |>
+  str_replace(" ","T") |>
+  str_c(".000")
+
+
+query = URLencode(str_c("SELECT transit_timestamp, station_complex_id, sum(ridership) GROUP BY transit_timestamp, station_complex_id"))
+
+subway_df <- fromJSON(str_c("https://data.ny.gov/resource/wujg-7c2s.json?$query=",query)) |>
+  as_tibble()
+
+
 ```
 
 
