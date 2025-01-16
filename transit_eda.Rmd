@@ -6,6 +6,7 @@ output: github_document
 
 ```{r setup, include=FALSE}
 library(tidyverse)
+library(jsonlite)
 
 knitr::opts_chunk$set(
   fig.width = 6,
@@ -24,10 +25,10 @@ options(
 )
 
 scale_colour_discrete = scale_colour_viridis_d
-scale_fill_discrete = scale_fill_viridis_d```
+scale_fill_discrete = scale_fill_viridis_d
 ```
 
-The idea here is to explore changes in transit and transportation following the implementation of congestion pricing.
+The idea here is to explore changes in transit and transportation following the implementation of congestion pricing. Essentially, I want to know if people are choosing alternative modes of transportation in place of driving.
 
 My initial thought is to mainly use maps, line/bar graphs, and maybe some animated graphs to show what is happening.
 
@@ -37,14 +38,40 @@ Also, I would ideally want this to end up as a dashboard that could be updated i
 
 Datasets I will be using:
 
--   [MTA Subway Hourly Ridership: Beginning July 2020](<https://data.ny.gov/resource/wujg-7c2s>)
+-   [Bicycle Counts](https://data.cityofnewyork.us/resource/uczf-rk3c)
 
-- [Bicycle Counts](https://data.cityofnewyork.us/resource/uczf-rk3c)
+-   [MTA Bridges & Tunnels Hourly Traffic Rates: Beginning 2010](https://data.ny.gov/resource/qzve-kjga)
 
-- [MTA Bridges & Tunnels Hourly Traffic Rates: Beginning 2010](https://data.ny.gov/resource/qzve-kjga)
+-   [MTA Bus Hourly Ridership: Beginning September 2020](https://data.ny.gov/resource/kv7t-n8in)
 
-- [MTA Bus Hourly Ridership: Beginning September 2020](https://data.ny.gov/resource/kv7t-n8in)
+-   [MTA Subway Hourly Ridership: Beginning July 2020](https://data.ny.gov/resource/wujg-7c2s)
 
-I also anticipate needing some additional datasets for mapping the data, and for obtaining weather data.
+I also anticipate needing some additional datasets for mapping the data, and for obtaining weather data. Another future direction could be to incorporate regional rail data as well.
 
 Overall, one challenge I forsee is handling all the data. Many of these datasets have millions of rows, which could be hard to pull via the API, and may not be easily stored in memory as R does (maybe a python solution will be better? We will see).
+
+## Bicycle data
+
+Pull a 2 year window of data to limit rows
+```{r}
+max_date <- fromJSON("https://data.cityofnewyork.us/resource/uczf-rk3c.json?$select=max(date)") |>
+  pull() |>
+  str_replace("T"," ") |>
+  as.POSIXlt()
+
+# subtract 2 years and reformat
+min_date <- as.character(max_date - dyears(2)) |>
+  str_replace(" ","T") |>
+  str_c(".000")
+
+bike_rows <-  fromJSON(str_c("https://data.cityofnewyork.us/resource/uczf-rk3c.json?$select=count(id)&$where=date>='",min_date,"'")) |>
+  pull()
+
+bike_df <- fromJSON(str_c("https://data.cityofnewyork.us/resource/uczf-rk3c.json?$where=date>='",min_date,"'&$limit=",bike_rows))
+```
+
+## Subway data
+
+## Bus data
+
+## Driving data
